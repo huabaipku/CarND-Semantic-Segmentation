@@ -7,4 +7,4 @@ briefly, the pool layer 7,4,3 were loaded and decoded to the size of the origina
 
 Brief description           |  Model Graph (tensorboard screenshot)
 :-------------------------:|:-------------------------:
-  |  <img src="./figures/graph.jpg" width="400" height="800" />
+  haha |  <img src="./figures/graph.jpg" width="400" height="800" />
