@@ -6,6 +6,7 @@ In this project, we practiced implementing a fully convolutional network based o
 From the frozen VGG model, the pooling layer 7,4,3 were loaded and upscaled to the size of the original image. Each layer was first connected to a 1x1 convolutional layer. Then the layers were sequentially combined and upsampled to the dimention of the previous layer, and enventually the dimention of the input image
 
 Model Graph (tensorboard screenshot):
+
 <img src="./figures/graph.jpg" width="400" height="800" />
 
 ## Tuning parameters
@@ -20,6 +21,7 @@ lr (learning rate) = 0.0005 (blue)
 lr (learning rate) = 0.0003 (red)
 
 Finally, chose 0.0005 as the initial learning rate.
+
 <img src="./figures/compare_learning_rate.png" width="800" height="400" />
 
 ## Example output
