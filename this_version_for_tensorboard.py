@@ -108,11 +108,11 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     with tf.name_scope('cross_entropy'):
         cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
 
-    ## expontinally decay the learning rate
     global_step = tf.Variable(0, trainable=False)
     starter_learning_rate = learning_rate
     lr = tf.train.exponential_decay(starter_learning_rate, global_step, 100, 0.96, staircase=True)
     lr = tf.Print(lr, [lr], "Current Learning Rate is:")
+    tf.summary.scalar("learning_rate", lr)
 
     with tf.name_scope('train'):
         train_op = tf.train.AdamOptimizer(lr).minimize(cross_entropy_loss, global_step=global_step)
@@ -120,7 +120,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     return logits, train_op, cross_entropy_loss
 tests.test_optimize(optimize)
 
-def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
+def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, summary_op, cross_entropy_loss, input_image,
              correct_label, keep_prob, learning_rate):
     """
     Train neural network and print out the loss during training.
@@ -136,8 +136,13 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     ## =============== step 4: set up the training process =============== ##
+    ##        ##
     print("========= Start training process =============")
 
+    logs_path = './logs'
+    writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
+
+    overall_index = 1
     for epoch in range(epochs):
        print("=========== EPOCH #: {} =============".format(epoch+1))
        batch_index = 1
@@ -146,14 +151,14 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                          correct_label: batch_labels,
                          keep_prob: 0.5,
                          learning_rate: 0.0005}
-           _, loss = sess.run([train_op, cross_entropy_loss], feed_dict=param_dict)
-
-           ## just for debugging purpose, output loss every 10 steps
+           _,summary, loss = sess.run([train_op, summary_op, cross_entropy_loss], feed_dict=param_dict)
            if batch_index%10 == 0:
                print("==========loss:{}========".format(loss))
+           writer.add_summary(summary, overall_index)
            batch_index += 1
+           overall_index += 1
     # pass
-tests.test_train_nn(train_nn)
+# tests.test_train_nn(train_nn)
 
 def run():
     num_classes = 2
@@ -182,24 +187,26 @@ def run():
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
         # TODO: Build NN using load_vgg, layers, and optimize function
-        print("===== load_vgg ======")
         input_image, keep_prob, layer3_out, layer4_out, layer7_out = load_vgg(sess, vgg_path)
+        print("===== Builed_NN ======")
 
-        print("===== Get final layer =====")
         with tf.name_scope("final_layer"):
             final_layer = layers(layer3_out, layer4_out, layer7_out, num_classes)
+        print("===== Get final layer =====")
 
-        print("===== set up optimizer =====")
         correct_label = tf.placeholder(dtype=tf.float32, shape=(None, None, None, num_classes))
         learning_rate = tf.placeholder(dtype=tf.float32)
         logits, train_op, cross_entropy_loss  = optimize(final_layer, correct_label, learning_rate, num_classes)
+        tf.summary.scalar("cost", cross_entropy_loss)
+        summary_op = tf.summary.merge_all()
+
+        print("===== set up optimizer")
 
         # TODO: Train NN using the train_nn function
 
-        print("==== Initialize the global variables")
         sess.run(tf.global_variables_initializer())
-
-        train_nn(sess, EPOCHS, BATCH_SIZE, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, learning_rate)
+        print("==== Initialize the global variables")
+        train_nn(sess, EPOCHS, BATCH_SIZE, get_batches_fn, train_op, summary_op, cross_entropy_loss, input_image, correct_label, keep_prob, learning_rate)
 
         # TODO: Save inference data using helper.save_inference_samples
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
