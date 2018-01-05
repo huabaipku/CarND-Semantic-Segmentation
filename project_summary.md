@@ -12,7 +12,7 @@ Model Graph (tensorboard screenshot):
 ## Tuning parameters
 Lots of parameters to tune, such as BATCH_SIZE, total EPOCH number, and initial learning rate.
 Finally, BATCH_SIZE of 8, EPOCH number of 50, and 0.0005 as the initial learning rate were chosen.
-Here is the example of compaing 3 different initial learning rate (screenshot of the tensorboard):
+Here is the example of comparing the decay of the cost using 3 different initial learning rate (screenshot of the tensorboard):
 
 lr (learning rate) = 0.001 (orange)
 
