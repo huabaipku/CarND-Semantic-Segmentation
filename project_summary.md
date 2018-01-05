@@ -1,6 +1,6 @@
 
 ## Introduction
-In this project, we practiced implementing a fully convolutional network based on a frozen trained VGG model. Especially, we used transposed convolutional operations to make sure the final dimension of the output is the same as the input images, hence enabling semantic segmentation.
+In this project, we practiced implementing a fully convolutional network based on a frozen trained VGG model. Especially, we used transposed convolutional operations to make sure the final dimension of the output is the same as the input images, hence enabling semantic segmentation. Note: part codes are from the video of the walkthrough lecture.
 
 ## Overall graph of the model
 From the frozen VGG model, the pooling layer 7,4,3 were loaded and upscaled to the size of the original image. Each layer was first connected to a 1x1 convolutional layer. Then the layers were sequentially combined and upsampled to the dimention of the previous layer, and enventually the dimention of the input image

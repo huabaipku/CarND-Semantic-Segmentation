@@ -183,11 +183,11 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
         print("===== load_vgg ======")
-        input_image, keep_prob, layer3_out, layer4_out, layer7_out = load_vgg(sess, vgg_path)
+        input_image, keep_prob, layer3_vgg, layer4_vgg, layer7_vgg = load_vgg(sess, vgg_path)
 
         print("===== Get final layer =====")
         with tf.name_scope("final_layer"):
-            final_layer = layers(layer3_out, layer4_out, layer7_out, num_classes)
+            final_layer = layers(layer3_vgg, layer4_vgg, layer7_vgg, num_classes)
 
         print("===== set up optimizer =====")
         correct_label = tf.placeholder(dtype=tf.float32, shape=(None, None, None, num_classes))
